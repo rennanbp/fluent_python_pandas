@@ -1,0 +1,72 @@
+import pandas as pd
+
+# Carregar o arquivo CSV
+df = pd.read_csv("avaliacao_empresas_paisagismo.csv")
+
+# Visualizar as primeiras linhas
+print(df.head())
+
+df.info()
+
+# Média de cada critério
+mean_scores = df.mean(numeric_only=True)
+print(mean_scores)
+
+# Pesos para cada critério
+pesos = [0.3, 0.25, 0.2, 0.15, 0.1]
+
+# Calcular a pontuação total ponderada
+df['Pontuação Total'] = (df.iloc[:, 1:] * pesos).sum(axis=1)
+print(df[['Empresa', 'Pontuação Total']])
+
+# Calcular a pontuação total ponderada
+pesos = [0.3, 0.25, 0.2, 0.15, 0.1]
+df['Pontuação Total'] = (df.iloc[:, 1:] * pesos).sum(axis=1)
+
+# Calcular a média da pontuação total
+media_pontuacao = df['Pontuação Total'].mean()
+print("Média da Pontuação Total:", media_pontuacao)
+
+# Empresas com pontuação acima da média
+acima_media = df[df['Pontuação Total'] > media_pontuacao]
+print("Empresas acima da média:\n", acima_media[['Empresa', 'Pontuação Total']])
+
+# Empresas com pontuação abaixo da média
+abaixo_media = df[df['Pontuação Total'] < media_pontuacao]
+
+
+print("Empresas abaixo da média:\n", abaixo_media[['Empresa', 'Pontuação Total']])
+
+# Iterar sobre cada critério de avaliação
+for coluna in df.columns[1:-1]:  # Excluindo a coluna 'Empresa' e 'Pontuação Total'
+    max_empresa = df.loc[df[coluna].idxmax()]['Empresa']
+    min_empresa = df.loc[df[coluna].idxmin()]['Empresa']
+    max_valor = df[coluna].max()
+    min_valor = df[coluna].min()
+
+    print(f"\nCritério: {coluna}")
+    print(f"Empresa com maior pontuação: {max_empresa} (Pontuação: {max_valor})")
+    print(f"Empresa com menor pontuação: {min_empresa} (Pontuação: {min_valor})")
+
+import matplotlib.pyplot as plt
+
+# Gráfico de Barras para a Pontuação Total
+plt.figure(figsize=(10, 6))
+plt.bar(df['Empresa'], df['Pontuação Total'], color='skyblue')
+plt.xlabel('Empresa')
+plt.ylabel('Pontuação Total')
+plt.title('Pontuação Total de Cada Empresa')
+plt.xticks(rotation=45)
+plt.show()
+
+# Gráficos de Barras para Cada Critério
+for coluna in df.columns[1:-1]:  # Excluindo 'Empresa' e 'Pontuação Total'
+    plt.figure(figsize=(10, 6))
+    plt.bar(df['Empresa'], df[coluna], color='lightgreen')
+    plt.xlabel('Empresa')
+    plt.ylabel(f'{coluna}')
+    plt.title(f'{coluna} por Empresa')
+    plt.xticks(rotation=45)
+    plt.show()
+
+
